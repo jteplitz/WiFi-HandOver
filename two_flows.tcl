@@ -147,6 +147,7 @@ $ns_ node-config -channel $chan_6_\
 set node_(0) [$ns_ node]
 $node_(0) random-motion 0
 
+
 set node_(1) [$ns_ node]
 $node_(1) random-motion 0
 
