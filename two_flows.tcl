@@ -18,9 +18,9 @@ set val(stop) 1000.0
 set val(run_tcp) 0
 
 
-if { $argc != 12} {
+if { $argc != 16} {
         puts "Wrong no. of cmdline args."
-        puts "Usage: ns twoflows.tcl -run_tcp <0/1> -RTSthresh <RTS_Threshold> -CSthresh <carrier-sense threshold> -dist <x> -sendingRate <rate> -sendingRate2 <rate>"
+        puts "Usage: ns twoflows.tcl -run_tcp <0/1> -RTSthresh <RTS_Threshold> -CSthresh <carrier-sense threshold> -dist <x> -sendingRate <rate> -sendingRate2 <rate> -udp_node <node for run_tcp 2> -numRetries <retries>"
         exit 0
 }
 
@@ -40,16 +40,15 @@ proc getopt {argc argv} {
 }
 getopt $argc $argv
 
-
 Mac/802_11 set basicRate_	1Mb	;# basic sending rate
 Mac/802_11 set dataRate_	2Mb	;# sending rate for data and control
 
 #Mac/802_11 set RTSThreshold_		3000	;# no RTS/CTS 
 #Mac/802_11 set RTSThreshold_		1	;# RTS/CTS
 Mac/802_11 set RTSThreshold_		$val(RTSthresh)
-Mac/802_11 set ShortRetryLimit_ 	7	;# Short Retry Limit 
+Mac/802_11 set ShortRetryLimit_ 	$val(numRetries)	;# Short Retry Limit 
 #Mac/802_11 set MaxShortRetryLimit_ 	7	;# Short Retry Limit 
-Mac/802_11 set LongRetryLimit_ 		7	;# Long Retry Limit 
+Mac/802_11 set LongRetryLimit_ 		$val(numRetries)	;# Long Retry Limit 
 #Mac/802_11 set IsVariable_CWMax_	0	;# Variable Contention Window
 						;# 0: False, 1: True
 #Mac/802_11 set Variable_CWMax_		1023	;# Maximum Contention Window
@@ -70,7 +69,8 @@ Phy/WirelessPhy set CSThresh_ $val(CSthresh)
 
 Phy/WirelessPhy set CPThresh_  10.0             ;# ns2 default  
 set prop	[new Propagation/Shadowing]
-Phy/WirelessPhy set RXThresh_  3.65262e-10
+#Phy/WirelessPhy set RXThresh_ 2.81838e-09
+Phy/WirelessPhy set RXThresh_ 3.65262e-10
 #-75dBm
 $prop set pathlossExp_ 2.9
 $prop set std_db_ 1.1
@@ -84,9 +84,6 @@ Phy/WirelessPhy set Pt_ 0.281838            ;# 24 dBm # ns-2 default
 #Phy/WirelessPhy set Pt_ 0.010              ;# 10 dBm
 #Phy/WirelessPhy set Pt_ 0.005              ;# 7 dBm
 #Phy/WirelessPhy set freq_ 2.4e+9           ; atenție, TwoRayGround folosește Friis sub 4*pi*hr*ht/lambda ~ 235m!  
-
-
-
 
 # TRACE PART
 set filename       twoflows-shadow
@@ -147,7 +144,6 @@ $ns_ node-config -channel $chan_6_\
 set node_(0) [$ns_ node]
 $node_(0) random-motion 0
 
-
 set node_(1) [$ns_ node]
 $node_(1) random-motion 0
 
@@ -170,7 +166,7 @@ $node_(0) set Y_ 0.0
 $node_(0) set Z_ 0.0
 
 $node_(1) set X_ [expr $val(dist) - 0.001]
-$node_(1) set Y_ 0
+$node_(1) set Y_ 0.0
 $node_(1) set Z_ 0.0
 
 
@@ -191,7 +187,6 @@ for {set i 0} {$i < $val(nn) } {incr i} {
 
 proc attach-tcp-traffic { src_n dst_n packetSize start_t  stop_t flow_id} {
     global val ns_ node_ tcpfd
-
     set tcp [new Agent/TCP/Sack1]
     $tcp set class_ $flow_id
     $tcp set packetSize_ $packetSize
@@ -223,7 +218,7 @@ proc dump_tcp { src start stop flowid } {
     puts "\nloss-monitor for flow $flowid"
     set sending_time [expr $stop-$start]
     puts "sending time: $sending_time lastack: [$src set ack_] srtt: [$src set srtt_]"
-    puts "datab: [$src set ndatabytes_]  retr: [$src set nrexmitbytes_]"
+    puts "datab: [$src set ndatabytes_]  retr: $flowid [$src set nrexmitbytes_]"
     if { [$src set ack_] <= 0.0 } { 
 	puts "Throughput $flowid 0.0"
     } else { 
@@ -285,16 +280,24 @@ if { $val(run_tcp) == 0 } {
     $ns_ at $val(start1) "$cbr1 start"
     $ns_ at $val(stop) "$cbr1 stop"
 } else {
-if { $val(run_tcp) == 1 } {  
+if { $val(run_tcp) == 1 } { 
     attach-tcp-traffic 0 1 1460 $val(start0) $val(stop) 0
     attach-tcp-traffic 2 3 1460 $val(start1) $val(stop) 2
 } else {
-    set null0 [new Agent/LossMonitor]
-    $ns_ attach-agent $node_(1) $null0
-    set cbr0 [attach-cbr-traffic $node_(0) $null0 [clock clicks]  1460  $val(sendingRate)]
-    $ns_ at $val(start0) "$cbr0 start"
-    $ns_ at $val(stop) "$cbr0 stop"
-    attach-tcp-traffic 2 3 1460 $val(start1) $val(stop) 2
+    if { $val(udp_node) == 1} {
+    	set null0 [new Agent/LossMonitor]
+    	$ns_ attach-agent $node_(1) $null0
+    	set cbr0 [attach-cbr-traffic $node_(0) $null0 [clock clicks]  1460  $val(sendingRate)]
+    	$ns_ at $val(start0) "$cbr0 start"
+    	$ns_ at $val(stop) "$cbr0 stop"
+    } else {
+    	set null0 [new Agent/LossMonitor]
+    	$ns_ attach-agent $node_(3) $null0
+    	set cbr0 [attach-cbr-traffic $node_(2) $null0 [clock clicks]  1460  $val(sendingRate2)]
+    	$ns_ at $val(start0) "$cbr0 start"
+    	$ns_ at $val(stop) "$cbr0 stop"
+    }
+#    attach-tcp-traffic 2 3 1460 $val(start1) $val(stop) 2
 }
 }
 
