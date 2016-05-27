@@ -1,6 +1,6 @@
 We highly recommend using EC2 to reproduce our results. Instructions for doing so are as follows:
 
-1. Search for the “ns-2.34-w/NOAH-no-ARP” AMI on the community marketplace
+1. Search for the “ns-2.34-w/NOAH-no-ARP” AMI on the community marketplace (N. California region)
 2. Launch a new t2.medium or t2.small instance with this AMI.
 3. Login as ‘ubuntu’
 4. Clone https://github.com/jteplitz602/WiFi-HandOver
