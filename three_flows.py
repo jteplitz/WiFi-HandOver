@@ -1,6 +1,6 @@
 import subprocess
 CSTHRESH="1.76149e-10"
-subprocess.call(["rm", "udp-three-" + CSTHRESH + ".csv"])
+import sys
 
 SKIP=10
 
@@ -11,5 +11,5 @@ for x in xrange(150):
 				x0 = y / 1.73
 				x1 = 150 - x0
 				if x >= x0 and x <= x1:
-					subprocess.call(["./three_flows.sh", str(x), str(y)])
+					subprocess.call(["./three_flows.sh", str(x), str(y), sys.argv[1]])
 					

@@ -12,7 +12,7 @@ def movingaverage(interval, window_size):
     window= numpy.ones(int(window_size))/float(window_size)
     return numpy.convolve(interval, window, 'same')
 
-NUM_TRIES = 20
+NUM_TRIES = 10
 NUM_RETR = 15
 perc1 = []
 perc2 = []

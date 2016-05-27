@@ -1,3 +1,7 @@
+import matplotlib
+
+matplotlib.use("Agg")
+
 from pylab import plot, ylim, xlim, show, xlabel, ylabel, grid, legend, figure, gca, cm, savefig
 from numpy import linspace, loadtxt, ones, convolve
 from mpl_toolkits.mplot3d import Axes3D
