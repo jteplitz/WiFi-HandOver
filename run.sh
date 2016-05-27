@@ -11,7 +11,6 @@ rm tcp-$CSTHRESH.csv
 rm udp-$CSTHRESH.csv
 rm udp1-$CSTHRESH.csv
 rm udp2-$CSTHRESH.csv
-rm tcp-loss*.csv
 rm twoflows-shadow.*
 for TRIAL in {0..10}
 do
@@ -32,11 +31,8 @@ done
 done
 python graph_loss.py
 rm tcp-loss-*
-
-ns three_flows.tcl -run_tcp 1 -RTSthresh 3000 -CSthresh $CSTHRESH -x_dist $1 -y_dist $2 -sendingRate 3Mbps -sendingRate2 3Mbps -udp_node 1 -numRetries 7 | grep 'Throughput' | sed 's/ /,/g' | sed "s/Throughput/$1,$2/g" >> tcp-three.csv
-
-ns three_flows.tcl -run_tcp 0 -RTSthresh 3000 -CSthresh $CSTHRESH -x_dist $1 -y_dist $2 -sendingRate 3Mbps -sendingRate2 3Mbps -udp_node 1 -numRetries 7 | grep 'Throughput' | sed 's/ /,/g' | sed "s/Throughput/$1,$2/g" >> udp-three.csv
-
+python tcp_three_flows.py tcp-three.csv
+python udp_three_flows.py udp-three.csv
 python graph_three_flows.py tcp-three.csv
 python graph_three_flows.py udp-three.csv
 

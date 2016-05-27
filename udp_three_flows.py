@@ -11,5 +11,5 @@ for x in xrange(150):
 				x0 = y / 1.73
 				x1 = 150 - x0
 				if x >= x0 and x <= x1:
-					subprocess.call(["./three_flows.sh", str(x), str(y), sys.argv[1]])
+					subprocess.call(["./udp_three_flows.sh", str(x), str(y), sys.argv[1]])
 					

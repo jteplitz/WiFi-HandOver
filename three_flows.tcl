@@ -172,7 +172,8 @@ set cmd "[$node_(0) set ragent_] routing 2  1 1   20 1"
 eval $cmd
 set cmd "[$node_(2) set ragent_] routing 2  3 3   20 3"
 eval $cmd
-
+set cmd "[$node_(4) set ragent_] routing 2  5 5   20 5"
+eval $cmd
 
 $node_(0) set X_ 0.0 
 $node_(0) set Y_ 0.0 
