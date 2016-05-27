@@ -12,7 +12,7 @@ rm udp-$CSTHRESH.csv
 rm udp1-$CSTHRESH.csv
 rm udp2-$CSTHRESH.csv
 rm twoflows-shadow.*
-for TRIAL in {0..10}
+for TRIAL in {0..9}
 do
 for NUMRETRIES in {0..14}
 do
