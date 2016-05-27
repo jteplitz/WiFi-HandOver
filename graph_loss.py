@@ -12,11 +12,12 @@ def movingaverage(interval, window_size):
     window= numpy.ones(int(window_size))/float(window_size)
     return numpy.convolve(interval, window, 'same')
 
-NUM_TRIES = 10
+NUM_TRIES = 20
+NUM_RETR = 15
 perc1 = []
 perc2 = []
 retr = []
-for i in range(20):
+for i in range(NUM_RETR):
     perc1.append(0)
     perc2.append(0)
     retr.append(i)
@@ -38,11 +39,6 @@ for j in range(NUM_TRIES):
 for a in range(len(perc1)):
     perc1[a] /= NUM_TRIES
     perc2[a] /= NUM_TRIES
-
-
-print perc1
-print perc2
-print retr
 # retr = []
 # perc = []
 # retr2 = []

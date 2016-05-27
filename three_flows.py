@@ -1,6 +1,6 @@
 import subprocess
 CSTHRESH="1.76149e-10"
-subprocess.call(["rm", "tcp-three-" + CSTHRESH + ".csv"])
+subprocess.call(["rm", "udp-three-" + CSTHRESH + ".csv"])
 
 SKIP=10
 

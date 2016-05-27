@@ -195,8 +195,8 @@ $node_(4) set X_ 75
 $node_(4) set Y_ 129.9
 $node_(4) set Z_ 0.0
 
-$node_(5) set X_ [expr $val(x_dist) + 0.003]
-$node_(5) set Y_ [expr $val(y_dist) + 0.003]
+$node_(5) set X_ [expr $val(x_dist) + 0.001]
+$node_(5) set Y_ [expr $val(y_dist) - 0.001]
 $node_(5) set Z_ 0.0
 
 
@@ -298,6 +298,12 @@ if { $val(run_tcp) == 0 } {
     set cbr1 [attach-cbr-traffic $node_(2) $null1 [clock clicks] 1460  $val(sendingRate2)]
     $ns_ at $val(start1) "$cbr1 start"
     $ns_ at $val(stop) "$cbr1 stop"
+
+    set null2 [new Agent/LossMonitor]
+    $ns_ attach-agent $node_(5) $null2
+    set cbr2 [attach-cbr-traffic $node_(4) $null2 [clock clicks] 1460  $val(sendingRate2)]
+    $ns_ at $val(start2) "$cbr2 start"
+    $ns_ at $val(stop) "$cbr2 stop"
 } else {
 if { $val(run_tcp) == 1 } { 
     attach-tcp-traffic 0 1 1460 $val(start0) $val(stop) 0
@@ -324,11 +330,12 @@ if { $val(run_tcp) == 1 } {
 for {set i 0} {$i < $val(nn) } {incr i} {
     $ns_ at [expr $val(stop) + 0.2]  "$node_($i) reset";
 }
-$ns_ at [expr $val(stop) + 0.4]  "exit"; #FIXME!
+$ns_ at [expr $val(stop) + 0.5]  "exit"; #FIXME!
 
 if {  $val(run_tcp) == 0  } { 
     $ns_ at [expr $val(stop) + 0.2 ] "dump_udp $null0 $val(start0) $val(stop) 0"
     $ns_ at [expr $val(stop) + 0.3 ] "dump_udp $null1 $val(start1) $val(stop) 2"
+    $ns_ at [expr $val(stop) + 0.4 ] "dump_udp $null2 $val(start2) $val(stop) 4"
 } else { 
     if {  $val(run_tcp) == 2  }  {
     $ns_ at [expr $val(stop) + 0.2 ] "dump_udp $null0 $val(start0) $val(stop) 0"

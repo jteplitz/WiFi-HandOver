@@ -14,7 +14,7 @@ set val(x)      100
 set val(y)      200
 set val(start0) 0 
 set val(start1) 0 
-set val(stop) 1000.0
+set val(stop) 300.0
 set val(run_tcp) 0
 
 
